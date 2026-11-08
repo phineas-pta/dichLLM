@@ -28,3 +28,25 @@ def format_prompt_qwen38(instructions: str, prompt: str) -> str:
 		+ "<|im_start|>user\n" +       prompt + "\n<|im_end|>\n"
 		+ "<|im_start|>assistant\n<think>\n</think>\n" # disable thinking as it may waste tokens for worse output quality
 	)
+
+JSON_SCHEMA_TRÍCH = {
+	"type": "object",
+	"properties": {
+		"summary": {"type": "string"},
+		"glossary": {
+			"type": "array",
+			"items": {
+				"type": "object",
+				"properties": {
+					"chinese": {"type": "string"},
+					"vietnamese": {"type": "string"},
+					"category": {"enum": ["character", "organization", "location", "item", "skill", "other"]}
+				},
+				"required": ["chinese", "vietnamese", "category"],
+				"additionalProperties": False
+			}
+		}
+	},
+	"required": ["summary", "glossary"],
+	"additionalProperties": False
+}
