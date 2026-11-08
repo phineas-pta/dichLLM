@@ -31,7 +31,7 @@ with app.setup(hide_code=True):
 	MODEL_CONFIG = exl3.Config.from_directory(snapshot_download(repo_id="UnstableLlama/gemma-4-31B-it-uncensored-heretic-exl3-8.00bpw"))
 	MODEL = exl3.Model.from_config(MODEL_CONFIG, swa_full=True) # should enable SWA for gemma 4 but take much more VRAM
 	CACHE = exl3.Cache(MODEL, max_batch_size=1, max_num_tokens=76800) # context must be multiple of 256
-	MODEL.load(progressbar=True, device="cuda") # for multi gpu, replace `device="cuda"` with `tensor_p=True, tp_backend="nccl"`
+	MODEL.load(progressbar=True, device="cuda:0") # for multi gpu, replace `device="cuda"` with `tensor_p=True, tp_backend="nccl"`
 
 	TOKENIZER = exl3.Tokenizer.from_config(MODEL_CONFIG)
 	STOP_TOKENS = ["<eos>", "<turn|>"]
@@ -59,7 +59,7 @@ with app.setup(hide_code=True):
 		if isinstance(text, str):
 			prompt=format_prompt(text)
 		elif isinstance(text, list): # NEED TO ADAPT max_batch_size
-			prompt=[format_prompt(i) for i in text]
+			prompt=[format_prompt(i) for i in text] # performance not better
 		else:
 			raise TypeError("not text")
 		return GENERATOR.generate(prompt=prompt, stop_conditions=STOP_TOKENS, sampler=GEN_CONFIG, completion_only=True, encode_special_tokens=True)

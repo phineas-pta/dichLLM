@@ -10,3 +10,6 @@ quy trình:
 5. kiểm lại chính tả + kí tự lạ: chữ hán/hàn/nhật/arab/hindi
 6. kiểm lại tên + xưng hô
 7. đóng epub
+
+chạy full local dùng ExLlamaV3 trên Marimo Molab với RTX Pro 6000 Blackwell 96GB<br/>
+có thể viết lại cho OpenAI-compatible endpoint ko quá khó

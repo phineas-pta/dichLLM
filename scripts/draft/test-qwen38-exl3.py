@@ -56,7 +56,7 @@ with app.setup(hide_code=True):
 		if isinstance(text, str):
 			prompt=format_prompt(text)
 		elif isinstance(text, list): # NEED TO ADAPT max_batch_size
-			prompt=[format_prompt(i) for i in text]
+			prompt=[format_prompt(i) for i in text] # TODO: check performance improvement
 		else:
 			raise TypeError("not text")
 		return GENERATOR.generate(prompt=prompt, stop_conditions=STOP_TOKENS, sampler=GEN_CONFIG, completion_only=True, encode_special_tokens=True)

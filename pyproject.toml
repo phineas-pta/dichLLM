@@ -27,6 +27,7 @@ dependencies = [
 	"torch",
 	"exllamav3",
 	# "llama-cpp-python",
+	"pandas",
 ]
 
 [project.urls]
