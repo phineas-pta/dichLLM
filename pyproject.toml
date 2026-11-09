@@ -28,6 +28,7 @@ dependencies = [
 	"exllamav3",
 	# "llama-cpp-python",
 	"pandas",
+	# "underthesea",
 ]
 
 [project.urls]
