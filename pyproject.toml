@@ -25,6 +25,7 @@ dependencies = [
 	# "marimo[recommended,lsp]",
 	"huggingface_hub",
 	"torch",
+	# "torchvision", "transformers", "accelerate", # to compute token masks
 	"exllamav3",
 	# "llama-cpp-python",
 	"pandas",
