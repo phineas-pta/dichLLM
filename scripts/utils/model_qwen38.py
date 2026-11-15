@@ -38,3 +38,6 @@ def trích_streaming(text: str) -> None:
 	while _GENERATOR.num_remaining_jobs():
 		for result in _GENERATOR.iterate():
 			print(result.get("text", ""), end = "", flush = True)
+
+# _MODEL.unload()
+# _CACHE.detach_from_model(_MODEL)

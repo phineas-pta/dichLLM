@@ -6,7 +6,7 @@ from huggingface_hub import snapshot_download
 import exllamav3 as exl3
 
 from .misc import read_json
-from .prompts import INSTRUCTIONS_DỊCH, format_prompt_gemma4, CONTAMITION_TOKENS_gemma4
+from .prompts import INSTRUCTIONS_DỊCH, format_prompt_gemma4
 
 _CACHE_SIZE: Final = 69120 # context must be multiple of 256
 _DEVICE: Final = "cuda:0"
@@ -50,9 +50,6 @@ def dịch(text: str) -> str:
 		completion_only=True,
 		encode_special_tokens=True,
 	)
-# SPEED:
-# - without draft: mỗi giây ~30 chữ hán
-# - with DFlash: mỗi giây ~45 chữ hán
 
 def dịch_streaming(text: str) -> None:
 	_GENERATOR.enqueue(exl3.Job(
@@ -63,3 +60,8 @@ def dịch_streaming(text: str) -> None:
 	while _GENERATOR.num_remaining_jobs():
 		for result in _GENERATOR.iterate():
 			print(result.get("text", ""), end = "", flush = True)
+
+# _DRAFT_MODEL.unload()
+# _DRAFT_CACHE.detach_from_model(_DRAFT_MODEL)
+# _MAIN_MODEL.unload()
+# _MAIN_CACHE.detach_from_model(_MAIN_MODEL)
