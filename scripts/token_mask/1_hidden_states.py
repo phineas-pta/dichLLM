@@ -89,7 +89,7 @@ with torch.inference_mode():
 
 α = 200.
 repl32 = (- α / μ2) * μ
-(Path(__file__).parent / "repl32_gemma4.json").write_text(
+Path(__file__).with_name("repl32_gemma4.json").write_text(
 	json.dumps({"repl32": repl32.tolist()}, ensure_ascii=False, indent="\t"),
 	encoding="utf-8"
 )

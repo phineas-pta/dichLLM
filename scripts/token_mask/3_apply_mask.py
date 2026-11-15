@@ -21,8 +21,8 @@ from safetensors.torch import load_file, save_file
 MODEL_DIR = snapshot_download(repo_id="UnstableLlama/gemma-4-31B-it-uncensored-heretic-exl3-8.00bpw")
 # MODEL_DIR = snapshot_download(repo_id="turboderp/Qwen3.8-Flash-Next-exl3", revision="6.05bpw_h6_ng6")
 
-repl32    = json.loads((Path(__file__).parent / "repl32_gemma4.json").read_text(encoding="utf-8"))["repl32"]
-TOKEN_IDs = json.loads((Path(__file__).parent /   "mask_gemma4.json").read_text(encoding="utf-8"))["target_token_ids"]
+repl32    = json.loads(Path(__file__).with_name("repl32_gemma4.json").read_text(encoding="utf-8"))["repl32"]
+TOKEN_IDs = json.loads(Path(__file__).with_name(  "mask_gemma4.json").read_text(encoding="utf-8"))["target_token_ids"]
 
 # find shard:
 # - Gemma4: "model.language_model.embed_tokens.weight" (lm_head is tied to embed_tokens)

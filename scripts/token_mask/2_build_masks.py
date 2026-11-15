@@ -22,11 +22,10 @@ class URange: # unicode range
 		self.upper = upper
 	def __contains__(self, text: str) -> bool:
 		for char in text:
-			tmp = ord(char)
-			if self.lower <= tmp <= self.upper:
+			if self.lower <= ord(char) <= self.upper:
 				return True
 		return False
-	def __lt__(self, other) -> bool: # to sort (see below)
+	def __lt__(self, other) -> bool: # mandatory so it can be sorted
 		if self.upper < other.lower:
 			return True
 		elif self.lower > other.upper:
@@ -58,7 +57,7 @@ for tid in range(N):
 			target_token_ids.append(tid)
 			break # because list is sorted, no need to check for others
 
-(Path(__file__).parent / "mask_gemma4.json").write_text(
+Path(__file__).with_name("mask_gemma4.json").write_text(
 	json.dumps({"target_token_ids": sorted(target_token_ids)}, ensure_ascii=False, indent="\t"),
 	encoding="utf-8"
 )

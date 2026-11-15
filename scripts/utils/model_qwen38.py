@@ -4,7 +4,7 @@ from typing import Final
 from huggingface_hub import snapshot_download
 import exllamav3 as exl3
 
-from .prompts import INSTRUCTION_TRÍCH, JSON_SCHEMA_TRÍCH, format_prompt_qwen38 as format_prompt
+from .prompts import INSTRUCTION_TRÍCH, JSON_SCHEMA_TRÍCH, format_prompt_qwen38
 
 # default download dir: /home/marimo/.cache/huggingface/hub
 _MODEL_CONFIG: Final = exl3.Config.from_directory(snapshot_download(repo_id="turboderp/Qwen3.8-Flash-Next-exl3", revision="6.05bpw_h6_ng6"))
@@ -20,7 +20,7 @@ _FILTERS: Final = [exl3.LLGuidanceFilter(tokenizer=_TOKENIZER, eos_after_complet
 
 def trích(text: str) -> str:
 	return _GENERATOR.generate(
-		prompt=format_prompt(INSTRUCTION_TRÍCH, text),
+		prompt=format_prompt_qwen38(INSTRUCTION_TRÍCH, text),
 		stop_conditions=_STOP_TOKENS,
 		sampler=_GEN_CONFIG,
 		filters=_FILTERS,
@@ -30,7 +30,7 @@ def trích(text: str) -> str:
 
 def trích_streaming(text: str) -> None:
 	_GENERATOR.enqueue(exl3.Job(
-		input_ids=_TOKENIZER.encode(format_prompt(INSTRUCTION_TRÍCH, text), encode_special_tokens=True),
+		input_ids=_TOKENIZER.encode(format_prompt_qwen38(INSTRUCTION_TRÍCH, text), encode_special_tokens=True),
 		stop_conditions=_STOP_TOKENS,
 		sampler=_GEN_CONFIG,
 		filters=_FILTERS,
