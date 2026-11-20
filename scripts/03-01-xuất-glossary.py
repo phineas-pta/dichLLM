@@ -8,8 +8,7 @@ from .utils.misc import read_json
 
 glossary_list = []
 for i in METADATA_DIR.glob("*.json"):
-	tmp = read_json(i)["glossary"]
-	for j in tmp:
+	for j in read_json(i)["glossary"]:
 		j["chapter"] = i.stem
 		glossary_list.append(j)
 
@@ -18,7 +17,7 @@ for i in METADATA_DIR.glob("*.json"):
 	.groupby(["chinese", "vietnamese", "category"], as_index = False)
 	.agg({"chapter": "-".join})
 	.sort_values(by=["chinese"])
-	.to_csv(METADATA_DIR / "out.csv", index=False)
+	.to_excel(METADATA_DIR / "names.xlsx", index=False)
 )
 
 # USER đọc lại glossary và sửa theo ý muốn

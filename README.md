@@ -36,3 +36,5 @@ Gemma4 31B EXL3 8.0 bpw + KV cache FP16
 - with DFlash: mỗi giây ~42 chữ hán,thậm chí ~50
 
 so với: Kaggle T4×2 (16 GB ×2): Gemma4 26B-A4B GGUF weight Q4 + KV cache Q8: mỗi giây ~42 chữ hán (decoding ~67 tok/s) trên tổng 2 luồng song song
+
+TODO: better batched inference with EXL3

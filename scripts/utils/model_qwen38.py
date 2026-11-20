@@ -35,7 +35,7 @@ def trích_streaming(text: str) -> None:
 		sampler=_GEN_CONFIG,
 		filters=_FILTERS,
 	))
-	while _GENERATOR.num_remaining_jobs():
+	while _GENERATOR.num_remaining_jobs() > 0:
 		for result in _GENERATOR.iterate():
 			print(result.get("text", ""), end = "", flush = True)
 

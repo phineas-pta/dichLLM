@@ -8,7 +8,7 @@ import exllamav3 as exl3
 from .misc import read_json
 from .prompts import INSTRUCTIONS_DỊCH, format_prompt_gemma4
 
-_CACHE_SIZE: Final = 69120 # context must be multiple of 256
+_CACHE_SIZE: Final = 71680 # context must be multiple of 256
 _DEVICE: Final = "cuda:0"
 _BATCH_SIZE: Final = 1
 
@@ -24,7 +24,7 @@ _MAIN_MODEL.load(progressbar=True, device=_DEVICE)
 
 _TOKENIZER: Final = exl3.Tokenizer.from_config(_MAIN_CONFIG)
 _STOP_TOKENS: Final = ["<eos>", "<turn|>"]
-_BANNED_TOKENS_gemma4: Final = read_json(Path(__file__).with_name("banned_gemma4.json"))["banned_token_ids"]
+_BANNED_STUFF_gemma4: Final = read_json(Path(__file__).with_name("banned_gemma4.json"))
 
 _GENERATOR: Final = exl3.Generator(
 	model=_MAIN_MODEL,
@@ -39,12 +39,13 @@ _GEN_CONFIG: Final = exl3.ComboSampler(
 	top_p=.7,
 	min_p=.1,
 	rep_p=1.1,
-	logit_bias={i: "-inf" for i in _BANNED_TOKENS_gemma4}
+	logit_bias={i: "-inf" for i in _BANNED_STUFF_gemma4["banned_token_ids"]}
 )
 
 def dịch(text: str) -> str:
 	return _GENERATOR.generate(
 		prompt=format_prompt_gemma4(INSTRUCTIONS_DỊCH, text),
+		# prompt=[format_prompt(…, i) for i in …], # batched but speed not better
 		stop_conditions=_STOP_TOKENS,
 		sampler=_GEN_CONFIG,
 		completion_only=True,
@@ -57,9 +58,34 @@ def dịch_streaming(text: str) -> None:
 		stop_conditions=_STOP_TOKENS,
 		sampler=_GEN_CONFIG,
 	))
-	while _GENERATOR.num_remaining_jobs():
+	while _GENERATOR.num_remaining_jobs() > 0:
 		for result in _GENERATOR.iterate():
 			print(result.get("text", ""), end = "", flush = True)
+
+def dịch_batched(texts: list[str], progress_bar: "tqdm" = None) -> list[str]:
+	res = []
+	for i, t in enumerate(texts):
+		res.append("") # placeholder
+		_GENERATOR.enqueue(exl3.Job(
+			identifier=i, # to save order, in case order not conserved
+			input_ids=_TOKENIZER.encode(format_prompt_gemma4(INSTRUCTIONS_DỊCH, t), encode_special_tokens=True),
+			stop_conditions=_STOP_TOKENS,
+			sampler=_GEN_CONFIG,
+			banned_strings=_BANNED_STUFF_gemma4["banned_strings"],
+		))
+	while _GENERATOR.num_remaining_jobs() > 0:
+		for result in _GENERATOR.iterate():
+			i = result["identifier"]
+			if progress_bar is not None:
+				progress_bar.set_description(f"Processing № {i} of {len(texts)}")
+			if result["eos"]:
+				res[i] = result["full_completion"]
+				if progress_bar is not None:
+					chr_count = len(texts[i].replace("\n", ""))
+					tps = result["new_tokens"] / result["time_generate"]
+					progress_bar.update(chr_count)
+					progress_bar.set_postfix({"speed": f"{tps:.1f} tok/s"})
+	return res
 
 # _DRAFT_MODEL.unload()
 # _DRAFT_CACHE.detach_from_model(_DRAFT_MODEL)

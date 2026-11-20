@@ -34,15 +34,16 @@ class URange: # unicode range
 			raise ValueError("not disjoint")
 
 EXCLUDED_RANGES = sorted([ # only highly impactful scripts, no need to list all unicode scripts
-	# URange(0x4E00, 0x9FFF), URange(0x3400, 0x4DBF), URange(0xF900, 0xFAFF), # Script=Han
-	URange(0x3040, 0x309F), URange(0x30A0, 0x30FF), URange(0x31F0, 0x31FF), # Script=Katakana
-	URange(0xAC00, 0xD7A3), URange(0x1100, 0x11FF), URange(0x3130, 0x318F), # Script=Hangul
-	URange(0x0600, 0x06FF), URange(0x0750, 0x077F), URange(0x08A0, 0x08FF), # Script=Arabic
-	URange(0x0E00, 0x0E7F), # Script=Thai
-	URange(0x0400, 0x04FF), # Script=Cyrillic
-	URange(0x0900, 0x097F), # Script=Devanagari
-	URange(0x0590, 0x05FF), # Script=Hebrew
-	URange(0x0370, 0x03FF), # Script=Greek
+	# URange(0x4E00, 0x9FFF), URange(0x3400, 0x4DBF), URange(0xF900, 0xFAFF), # \p{Script=Han}
+	URange(0x3040, 0x309F), URange(0x30A0, 0x30FF), URange(0x31F0, 0x31FF), # \p{Script=Katakana}
+	URange(0xAC00, 0xD7A3), URange(0x1100, 0x11FF), URange(0x3130, 0x318F), # \p{Script=Hangul}
+	URange(0x0600, 0x06FF), URange(0x0750, 0x077F), URange(0x08A0, 0x08FF), # \p{Script=Arabic}
+	URange(0x0E00, 0x0E7F), # \p{Script=Thai}
+	URange(0x1780, 0x17FF), # \p{Script=Khmer}
+	URange(0x0400, 0x04FF), # \p{Script=Cyrillic}
+	URange(0x0900, 0x097F), # \p{Script=Devanagari}
+	URange(0x0590, 0x05FF), # \p{Script=Hebrew}
+	URange(0x0370, 0x03FF), # \p{Script=Greek}
 ])
 
 TOKENIZER = AutoTokenizer.from_pretrained("UnstableLlama/gemma-4-31B-it-uncensored-heretic-exl3-8.00bpw")
