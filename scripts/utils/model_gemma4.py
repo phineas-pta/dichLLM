@@ -75,16 +75,15 @@ def dịch_batched(texts: list[str], progress_bar: "tqdm" = None) -> list[str]:
 		))
 	while _GENERATOR.num_remaining_jobs() > 0:
 		for result in _GENERATOR.iterate():
-			i = result["identifier"]
-			if progress_bar is not None:
-				progress_bar.set_description(f"Processing № {i} of {N}")
+			# do not process progress_bar for each, too many connections lag marimo molab
 			if result["eos"]:
+				i = result["identifier"]
 				res[i] = result["full_completion"]
 				if progress_bar is not None:
 					chr_count = len(texts[i].replace("\n", ""))
 					tps = result["new_tokens"] / result["time_generate"]
 					progress_bar.update(chr_count)
-					progress_bar.set_postfix({"prev chap": f"{chr_count}chr", "prev TPS": f"{tps:.1f}tok/s"})
+					progress_bar.set_postfix({"prev_chap": f"{i}/{N} ({chr_count}chr)", "prev_TPS": f"{tps:.1f}tok/s"})
 	return res
 
 # _DRAFT_MODEL.unload()
