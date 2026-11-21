@@ -7,7 +7,7 @@ MUST BE RUN BEFORE LOADING ANY MODEL
 
 adapted from https://huggingface.co/ThakiCloud/Qwen3.8-27B-vi-cjk-suppressed/blob/main/apply_mask.py
 
-only lm_head.weight changes, so rather than making a dozen-GB copy, it's better to download the original weight and apply the mask.
+only lm_head.weight changes, so rather than making a dozen-GB copy, it’s better to download the original weight and apply the mask.
 should take a few minutes on CPU, no GPU needed.
 """
 

@@ -38,7 +38,7 @@ _GEN_CONFIG: Final = exl3.ComboSampler(
 	top_k=20,
 	top_p=.7,
 	min_p=.1,
-	rep_p=1.1,
+	rep_p=1.1, # TODO: exl3 has loop detection which may be more useful
 	logit_bias={i: "-inf" for i in _BANNED_STUFF_gemma4["banned_token_ids"]}
 )
 
@@ -63,9 +63,9 @@ def dịch_streaming(text: str) -> None:
 			print(result.get("text", ""), end = "", flush = True)
 
 def dịch_batched(texts: list[str], progress_bar: "tqdm" = None) -> list[str]:
-	res = []
+	N = len(texts)
+	res = [""] * N # placeholder
 	for i, t in enumerate(texts):
-		res.append("") # placeholder
 		_GENERATOR.enqueue(exl3.Job(
 			identifier=i, # to save order, in case order not conserved
 			input_ids=_TOKENIZER.encode(format_prompt_gemma4(INSTRUCTIONS_DỊCH, t), encode_special_tokens=True),
@@ -77,14 +77,14 @@ def dịch_batched(texts: list[str], progress_bar: "tqdm" = None) -> list[str]:
 		for result in _GENERATOR.iterate():
 			i = result["identifier"]
 			if progress_bar is not None:
-				progress_bar.set_description(f"Processing № {i} of {len(texts)}")
+				progress_bar.set_description(f"Processing № {i} of {N}")
 			if result["eos"]:
 				res[i] = result["full_completion"]
 				if progress_bar is not None:
 					chr_count = len(texts[i].replace("\n", ""))
 					tps = result["new_tokens"] / result["time_generate"]
 					progress_bar.update(chr_count)
-					progress_bar.set_postfix({"speed": f"{tps:.1f} tok/s"})
+					progress_bar.set_postfix({"prev chap": f"{chr_count}chr", "prev TPS": f"{tps:.1f}tok/s"})
 	return res
 
 # _DRAFT_MODEL.unload()

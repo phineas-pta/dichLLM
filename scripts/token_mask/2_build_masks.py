@@ -13,9 +13,9 @@ i.e. masking would prevent model from accepting Chinese input
 
 import json
 from pathlib import Path
-from transformers import AutoTokenizer
+from huggingface_hub import hf_hub_download
 
-class URange: # unicode range
+class URange: # utility class for unicode range
 	def __init__(self, lower: int, upper: int) -> None:
 		assert lower <= upper
 		self.lower = lower
@@ -46,16 +46,17 @@ EXCLUDED_RANGES = sorted([ # only highly impactful scripts, no need to list all 
 	URange(0x0370, 0x03FF), # \p{Script=Greek}
 ])
 
-TOKENIZER = AutoTokenizer.from_pretrained("UnstableLlama/gemma-4-31B-it-uncensored-heretic-exl3-8.00bpw")
-# TOKENIZER = AutoTokenizer.from_pretrained("turboderp/Qwen3.8-Flash-Next-exl3", revision="6.05bpw_h6_ng6")
+vocab = json.loads(Path(hf_hub_download(
+	repo_id="UnstableLlama/gemma-4-31B-it-uncensored-heretic-exl3-8.00bpw",
+	# repo_id="turboderp/Qwen3.8-Flash-Next-exl3", revision="6.05bpw_h6_ng6",
+	filename="tokenizer.json"
+)).read_text(encoding="UTF-8"))["model"]["vocab"]
 
-N = max(TOKENIZER.get_vocab().values()) + 1
 target_token_ids = []
-for tid in range(N):
-	tmp = TOKENIZER.decode([tid], skip_special_tokens=False)
+for k, v in vocab.items():
 	for interval in EXCLUDED_RANGES:
-		if tmp in interval:
-			target_token_ids.append(tid)
+		if k in interval:
+			target_token_ids.append(v)
 			break # because list is sorted, no need to check for others
 
 Path(__file__).with_name("mask_gemma4.json").write_text(
